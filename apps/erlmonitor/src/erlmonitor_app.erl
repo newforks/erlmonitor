@@ -15,11 +15,28 @@
 %%====================================================================
 
 start(_StartType, _StartArgs) ->
-    erlmonitor_sup:start_link().
+  Dispatch = cowboy_router:compile([
+    {'_', [
+%%      {"/", erlmonitor_handler, []}
+      {"/", cowboy_static, {priv_file, erlmonitor, "index.html"}},
+      {"/static/[...]", cowboy_static, {priv_dir, erlmonitor, "static/"}},
+      {"/js/[...]", cowboy_static, {priv_dir, erlmonitor, "js/"}},
+      {"/normal/[...]", erlmonitor_handler, []},
+%%      {"/socket.io/", erlmonitor_socket_io, []},
+      {"/websocket/", erlmonitor_websocket, []}
+    ]}
+  ]),
+  {ok, Port} = application:get_env(port),
+  {ok, _} = cowboy:start_clear(http, [
+    {port, Port}], #{
+      env => #{dispatch => Dispatch}
+    }
+  ),
+  erlmonitor_sup:start_link().
 
 %%--------------------------------------------------------------------
 stop(_State) ->
-    ok.
+  ok.
 
 %%====================================================================
 %% Internal functions

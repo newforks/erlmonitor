@@ -30,5 +30,6 @@ clean:
 	rm -f rebar3.crashdump
 
 clean_all:
-	@$(REBAR) clean --all
+	rm -rf _build
+	rm -f rebar.lock
 
