@@ -1,24 +1,147 @@
 <!doctype html>
 <html>
 <head>
-    Erlang Web Monitor
+    <title>Erlang Web Monitor</title>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <!--<script src="./js/erlmonitor_websocket.js?ver=1"></script>-->
+    <!--<script src="./js/erlmonitor_socket.io.js?ver=1"></script>-->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+            integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+            crossorigin="anonymous"></script>
+
 </head>
 <body>
 
-<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-<script src="./js/erlmonitor_websocket.js?ver=1"></script>
-<!--<script src="./js/erlmonitor_socket.io.js?ver=1"></script>-->
+<h2 id="title">Erlang Web Monitor</h2>
+<div class="container theme-showcase" role="main">
 
+    <div class="page-header">
+        <h1>Header Tables</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table" id="id_header_table">
+                <thead>
+                <tr>
+                    <th>#</th>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Username</th>
+                </tr>
+                </thead>
+                <tbody id="id_header_table_body">
+                <tr></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div class="container theme-showcase" role="main">
+
+    <div class="page-header">
+        <h1>Header Tables</h1>
+    </div>
+    <div class="row">
+        <div class="col-md-6">
+            <table class="table" id="id_pidlist_table">
+                <thead>
+                <tr>
+                    <th>Pid</th>
+                    <th>Process</th>
+                    <th>Current Function</th>
+                    <th>Status</th>
+                    <th>Reductions</th>
+                    <th>registered_name</th>
+                    <th>Message Queue</th>
+                    <th>Memory</th>
+                    <th>Stack Size</th>
+                    <th>Heap Size</th>
+                </tr>
+                </thead>
+                <tbody id="id_pidlist_table_body">
+                <tr></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+
+<div id="resultHeader"></div>
+<div id="resultPidList"></div>
 
 <script>
 
+    $(function () {
+        $(document).ready(function () {
+            // $.get( "ajax/headerlist", function( data ) {
+            //     // console.log(data);
+            //     data2 = JSON.stringify(data);
+            //     $( "#resultHeader" ).html( data2 );
+            // });
+            // $.get( "ajax/pidlist", function( data ) {
+            //     data2 = JSON.stringify(data);
+            //     $( "#resultPidList" ).html( data2 );
+            // });
 
+
+            $.get( "ajax/headerlist", function( data ) {
+                console.log(data);
+
+                // $("#id_header_table_body tr td").remove();
+                $("#id_header_table_body tr:last").after("<tr>" +
+                    "<td>"+data.uptime+"</td>" +
+                    "<td>"+data.local_time+"</td>" +
+                    "<td>"+data.process_count+"</td>" +
+                    "<td>"+data.run_queue+"</td>" +
+                    "</tr>");
+            });
+
+            $.get( "ajax/pidlist", function( list ) {
+                console.log(list);
+                // $("#id_pidlist_table_body tr td").remove();
+                for(var i=0; i<list.length; i++) {
+                    item = list[i];
+                    $("#id_pidlist_table_body tr:last").after("<tr>" +
+                        "<td>"+item.realpid+"</td>" +
+                        "<td>"+item.initial_call+"</td>" +
+                        "<td>"+item.current_function+"</td>" +
+                        "<td>"+item.status+"</td>" +
+                        "<td>"+item.reductions+"</td>" +
+                        "<td>"+item.registered_name+"</td>" +
+                        "<td>"+item.message_queue_len+"</td>" +
+                        "<td>"+item.memory+"</td>" +
+                        "<td>"+item.stack_size+"</td>" +
+                        "<td>"+item.heap_size+"</td>" +
+                        "</tr>");
+
+                }
+            });
+
+function test() {
+            $("#id_table_body tr td").remove();
+            $("#id_table_body tr:last").after("<tr>" +
+                "<td>3</td>" +
+                "<td>Second</td>" +
+                "<td>Gordon</td>" +
+                "<td>@Simon</td>" +
+                "</tr>");
+            $("#id_table_body tr:last").after("<tr>" +
+                "<td>3</td>" +
+                "<td>Second</td>" +
+                "<td>Gordon</td>" +
+                "<td>@Simon</td>" +
+                "</tr>");
+}
+        })
+    });
 
 </script>
-
-
-
-
 
 
 </body>

@@ -8,8 +8,8 @@ exec erl \
 -name erlmonitor@127.0.0.1 \
 -pa ./_build/default/lib/*/ebin \
 -config ./config/sys.config \
+-s reloader \
 -s erlmonitor \
 -setcookie 1234567890
 
-# -s reloader \
 

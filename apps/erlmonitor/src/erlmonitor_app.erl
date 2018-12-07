@@ -22,6 +22,7 @@ start(_StartType, _StartArgs) ->
       {"/static/[...]", cowboy_static, {priv_dir, erlmonitor, "static/"}},
       {"/js/[...]", cowboy_static, {priv_dir, erlmonitor, "js/"}},
       {"/normal/[...]", erlmonitor_handler, []},
+      {"/ajax/:method", erlmonitor_ajax, []},
 %%      {"/socket.io/", erlmonitor_socket_io, []},
       {"/websocket/", erlmonitor_websocket, []}
     ]}
