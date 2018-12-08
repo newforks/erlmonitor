@@ -102,7 +102,7 @@
                     "</tr>");
             });
 
-            $.get( "ajax/pidlist", function( list ) {
+            $.get( "ajax/pidlist?sortBy=7&sortReverse=0", function( list ) {
                 console.log(list);
                 // $("#id_pidlist_table_body tr td").remove();
                 for(var i=0; i<list.length; i++) {

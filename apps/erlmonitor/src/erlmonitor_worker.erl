@@ -47,12 +47,14 @@
   static_data,
   headerProplist,
   processesProplist,
-  remote_collector = erlmonitor_collector,
+%%  remote_collector = erlmonitor_collector,
+  remote_collector = erlmonitor_demo_collector,
   interval = 2000,
   reverse_sort = true,
   sort = 0,
   connected = false,
-  last_reductions = dict:new()  % @todo
+  timer
+%%  last_reductions = dict:new()  % @todo
 }).
 
 %%%===================================================================
@@ -74,26 +76,13 @@ start_link() ->
 %%% gen_server callbacks
 %%%===================================================================
 
-%%--------------------------------------------------------------------
-%% @private
-%% @doc
-%% Initializes the server
-%%
-%% @spec init(Args) -> {ok, State} |
-%%                     {ok, State, Timeout} |
-%%                     ignore |
-%%                     {stop, Reason}
-%% @end
-%%--------------------------------------------------------------------
--spec(init(Args :: term()) ->
-  {ok, State :: #state{}} | {ok, State :: #state{}, timeout() | hibernate} |
-  {stop, Reason :: term()} | ignore).
 init([]) ->
   Node = 'demo_cowboy@127.0.0.1',
   Cookie = 'demo_cowboy',
   NameType = longnames,
   State = monitor(Node, Cookie, NameType),
-  {ok, State, State#state.interval}.
+  Timer = erlang:send_after(State#state.interval, self(), collect),
+  {ok, State#state{timer = Timer}}.
 
 handle_call(get_header_data, _From, State=#state{headerProplist = HeaderProplist}) ->
 %%  ?LOGF("get_data:~p~n", [HeaderProplist]),
@@ -107,15 +96,17 @@ handle_call(_Request, _From, State) ->
 handle_cast(_Request, State) ->
   {noreply, State}.
 
-handle_info(timeout, State) ->
-  ?LOGLN("timeout"),
+handle_info(collect, State) ->
+  ?LOGLN("collect"),
   Collector = State#state.remote_collector,
   {ok, HeaderProplist, ProcessesProplist} = Collector:get_data(),
-  ?LOGF("get_data:~p~n", [ProcessesProplist]),
+%%  ?LOGF("get_data:~p~n", [ProcessesProplist]),
+  Timer = erlang:send_after(State#state.interval, self(), collect),
   {noreply, State#state{
     headerProplist = HeaderProplist,
-    processesProplist=ProcessesProplist
-  }, State#state.interval};
+    processesProplist=ProcessesProplist,
+    timer = Timer
+  }};
 handle_info(_Info, State) ->
   {noreply, State}.
 
