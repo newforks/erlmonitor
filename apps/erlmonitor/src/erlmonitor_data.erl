@@ -10,15 +10,15 @@
 -author("zhaoweiguo").
 -define(WORKER, erlmonitor_worker).
 %% API
--export([get_pidlist_data/0, get_header_data/0]).
+-export([get_process_list/0, get_total_info/0]).
 
-get_pidlist_data() ->
-  gen_server:call(?WORKER, get_pidlist_data).
+get_process_list() ->
+  gen_server:call(?WORKER, get_process_list).
 
 
 
-get_header_data() ->
-  gen_server:call(?WORKER, get_header_data).
+get_total_info() ->
+  gen_server:call(?WORKER, get_total_info).
 
 
 

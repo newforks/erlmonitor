@@ -2,6 +2,8 @@
 
 document.write("<script type='text/javascript' src='https://cdn.socket.io/socket.io-1.2.0.js'></script>");
 
+
+
 var HostPort = 'http://127.0.0.1:8080/websokcet';
 var socket =  io.connect(HostPort);
 socket.on('connect', function() {

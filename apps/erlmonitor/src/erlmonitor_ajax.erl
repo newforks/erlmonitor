@@ -67,20 +67,21 @@ handler(Req0, Ctx) ->
   Path = cowboy_req:path(Req0),
   ?LOGF("Path:~p~n", [Path]),
   EncodeJson = case Path of
-             <<"/ajax/pidlist">> ->
+             <<"/ajax/processlist">> ->
                #{orderBy := OrderBy, orderReverse := OrderReverse} = cowboy_req:match_qs(
                  [{orderBy, int, 7}, {orderReverse, int, 0}], Req0),
                ?LOGF("orderby:~p, reverse:~p~n", [OrderBy, OrderReverse]),
-               handler("pidlist", OrderBy, OrderReverse);
-             <<"/ajax/headerlist">> ->
-               handler("headerlist")
+               handler("processlist", OrderBy, OrderReverse);
+             <<"/ajax/totalinfo">> ->
+               handler("totalinfo")
            end,
-%%  ?LOGF("encodejson:~p~n", [EncodeJson]),
+  ?LOGF("encodejson:~p~n", [EncodeJson]),
   Req = cowboy_req:reply(200,
-    #{<<"content-type">> => <<"application/json">>},
-    EncodeJson,
+%%    #{<<"content-type">> => <<"application/json">>},
+    #{<<"content-type">> => <<"text/plain">>},
+    jsx:encode(EncodeJson),
     Req0),
-  {EncodeJson, Req, Ctx}.
+  {ok, Req, Ctx}.
 
 
 
@@ -90,30 +91,32 @@ handler(Req0, Ctx) ->
 
 
 
-handler("pidlist", OrderBy, OrderReverse) ->
+handler("processlist", OrderBy, OrderReverse) ->
   ?LOGLN(""),
   % todo
 %%  {ok, Nodes} = application:get_env("nodes"),
 %%  List = ["1", "2", "3"],
 %%  ?LOGLN("1111111"),
-  List = erlmonitor_data:get_pidlist_data(),
-  ?LOGF("data:~p~n", [List]),
-  SortList = lists:keysort(5, List),
+  ProcessList = erlmonitor_data:get_process_list(),
+  ?LOGF("data:~p~n", [ProcessList]),
+%%  SortList = lists:keysort(5, ProcessList),
+  SortList = erlmonitor_format:sort(ProcessList, 5),
 %%  List = [abc, <<"abc">>],
   ?LOGF("data:~p~n", [SortList]),
-  JsonList = erlmonitor_util:format_json(List),
+  JsonList = erlmonitor_util:format_json(SortList),
   EncodeJson = jsx:encode(JsonList),
 %%  JsonList = List,
-%%  ?LOGF("jsonlist:~p~n", [JsonList]),
+  ?LOGF("jsonlist:~p~n", [JsonList]),
   EncodeJson.
+%%  erlmonitor_format:handle_process_list(JsonList).
 
-handler("headerlist") ->
+handler("totalinfo") ->
   ?LOGLN(""),
   % todo
 %%  {ok, Nodes} = application:get_env("nodes"),
 %%  List = ["1", "2", "3"],
 %%  ?LOGLN("1111111"),
-  List = erlmonitor_data:get_header_data(),
+  List = erlmonitor_data:get_total_info(),
 %%  List = [abc, <<"abc">>],
 %%  ?LOGF("data:~p~n", [List]),
   JsonList = erlmonitor_util:format_json(List),
@@ -123,7 +126,7 @@ handler("headerlist") ->
   EncodeJson.
 
 
-file_exists(_) ->
-  ?LOGLN(""),
-  % @todo
-  false.
+%%file_exists(_) ->
+%%  ?LOGLN(""),
+%%  % @todo
+%%  false.

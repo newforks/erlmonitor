@@ -18,13 +18,13 @@ start(_StartType, _StartArgs) ->
   Dispatch = cowboy_router:compile([
     {'_', [
 %%      {"/", erlmonitor_handler, []}
-      {"/", cowboy_static, {priv_file, erlmonitor, "index.html"}},
       {"/static/[...]", cowboy_static, {priv_dir, erlmonitor, "static/"}},
       {"/js/[...]", cowboy_static, {priv_dir, erlmonitor, "js/"}},
       {"/normal/[...]", erlmonitor_handler, []},
       {"/ajax/:way", erlmonitor_ajax, []},
-%%      {"/socket.io/", erlmonitor_socket_io, []},
-      {"/websocket/", erlmonitor_websocket, []}
+      {"/socket.io/[...]", erlmonitor_socket_io, []},
+      {"/websocket/[...]", erlmonitor_websocket, []},
+      {"/[...]", cowboy_static, {priv_dir, erlmonitor, ""}}
     ]}
   ]),
   {ok, Port} = application:get_env(port),
@@ -34,6 +34,7 @@ start(_StartType, _StartArgs) ->
     }
   ),
   erlmonitor_sup:start_link().
+
 
 %%--------------------------------------------------------------------
 stop(_State) ->

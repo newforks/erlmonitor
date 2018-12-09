@@ -15,7 +15,7 @@
 
 
 get_data() ->
-  HeaderProplist = [{uptime, erlang:statistics(wall_clock)},
+  TotalInfos = [{uptime, erlang:statistics(wall_clock)},
     {local_time, calendar:local_time()},
     {process_count, erlang:system_info(process_count)},
     {run_queue, erlang:statistics(run_queue)},
@@ -25,15 +25,16 @@ get_data() ->
     {memory, erlang:memory([system, atom, atom_used, binary, code, ets])}
   ],
   Self = self(),
+  % Just get 5 number for debugging
   PidList = lists:sublist(erlang:processes(), 5),
 %%  ?LOGF("pidlist:~p~n", [PidList]),
-  ProcessesProplist =
-    [ [ {realpid, P}
+  ProcessList =
+    [ [{realpid, P}
 %%        ,{pid,erlang:pid_to_list(P)}
-      | process_info_items(P) ]
+      |process_info_items(P)]
       || P <- PidList, P /= Self ],
 
-  {ok, HeaderProplist, ProcessesProplist}.
+  {ok, TotalInfos, ProcessList}.
 
 
 

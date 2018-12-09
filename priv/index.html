@@ -3,6 +3,7 @@
 <head>
     <title>Erlang Web Monitor</title>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/locale/zh-cn.js"></script>
     <!--<script src="./js/erlmonitor_websocket.js?ver=1"></script>-->
     <!--<script src="./js/erlmonitor_socket.io.js?ver=1"></script>-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
@@ -72,7 +73,7 @@
 
 
 
-<div id="resultHeader"></div>
+<div id="resultHeader">2222</div>
 <div id="resultPidList"></div>
 
 <script>
@@ -84,29 +85,20 @@
             //     data2 = JSON.stringify(data);
             //     $( "#resultHeader" ).html( data2 );
             // });
-            // $.get( "ajax/pidlist", function( data ) {
+            // $.get( "ajax/processlist", function( data ) {
             //     data2 = JSON.stringify(data);
             //     $( "#resultPidList" ).html( data2 );
             // });
 
-
-            $.get( "ajax/headerlist", function( data ) {
-                console.log(data);
-
-                // $("#id_header_table_body tr td").remove();
-                $("#id_header_table_body tr:last").after("<tr>" +
-                    "<td>"+data.uptime+"</td>" +
-                    "<td>"+data.local_time+"</td>" +
-                    "<td>"+data.process_count+"</td>" +
-                    "<td>"+data.run_queue+"</td>" +
-                    "</tr>");
-            });
-
-            $.get( "ajax/pidlist?sortBy=7&sortReverse=0", function( list ) {
-                console.log(list);
+            $.get( "ajax/processlist?sortBy=7&sortReverse=0", function( lists ) {
+                console.log(JSON.parse(lists));
+                lists = JSON.parse(lists);
+                console.log(JSON.parse(lists));
+                lists = JSON.parse(lists);
                 // $("#id_pidlist_table_body tr td").remove();
-                for(var i=0; i<list.length; i++) {
-                    item = list[i];
+
+                for(var i=0; i<lists.length; i++) {
+                    item = lists[i];
                     $("#id_pidlist_table_body tr:last").after("<tr>" +
                         "<td>"+item.realpid+"</td>" +
                         "<td>"+item.initial_call+"</td>" +
@@ -119,9 +111,39 @@
                         "<td>"+item.stack_size+"</td>" +
                         "<td>"+item.heap_size+"</td>" +
                         "</tr>");
-
                 }
             });
+
+            // $.get( "ajax/processlist?sortBy=7&sortReverse=0", function( lists ) {
+            //     console.log(11111111111);
+            //     console.log(lists);
+            //     console.log(22222222222);
+            //     // $("#id_pidlist_table_body tr td").remove();
+            //     for(var i=0; i<lists.length; i++) {
+            //         var items = lists[i];
+            //         console.log(items);
+            //
+            //         var body = "<tr>";
+            //         for(var j=0; j<items.length; j++) {
+            //             body = body + "<td>"+items[j]+"</td>";
+            //         }
+            //         body = body + "</tr>";
+            //         $("#id_pidlist_table_body tr:last").after(body);
+            //     }
+            // });
+
+            // $.get( "ajax/totalinfo", function( data ) {
+            //     console.log(data);
+            //
+            //     // $("#id_header_table_body tr td").remove();
+            //     $("#id_header_table_body tr:last").after("<tr>" +
+            //         "<td>"+data.uptime+"</td>" +
+            //         "<td>"+data.local_time+"</td>" +
+            //         "<td>"+data.process_count+"</td>" +
+            //         "<td>"+data.run_queue+"</td>" +
+            //         "</tr>");
+            // });
+
 
 function test() {
             $("#id_table_body tr td").remove();

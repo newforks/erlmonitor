@@ -44,13 +44,13 @@
 
 -record(state, {
   node,
-  static_data,
-  headerProplist,
-  processesProplist,
+  node_basic_info,
+  total_infos,
+  process_list,
 %%  remote_collector = erlmonitor_collector,
   remote_collector = erlmonitor_demo_collector,
   interval = 2000,
-  reverse_sort = true,
+  reverse_sort = 0,
   sort = 0,
   connected = false,
   timer
@@ -79,17 +79,16 @@ start_link() ->
 init([]) ->
   Node = 'demo_cowboy@127.0.0.1',
   Cookie = 'demo_cowboy',
-  NameType = longnames,
-  State = monitor(Node, Cookie, NameType),
-  Timer = erlang:send_after(State#state.interval, self(), collect),
-  {ok, State#state{timer = Timer}}.
+  State = connect_node(Node, Cookie),
+  self() ! collect,
+  {ok, State}.
 
-handle_call(get_header_data, _From, State=#state{headerProplist = HeaderProplist}) ->
+handle_call(get_total_info, _From, State=#state{total_infos = TotalInfos}) ->
 %%  ?LOGF("get_data:~p~n", [HeaderProplist]),
-  {reply, HeaderProplist, State};
-handle_call(get_pidlist_data, _From, State=#state{processesProplist=ProcessesProplist}) ->
-%%  ?LOGF("get_data:~p~n", [ProcessesProplist]),
-  {reply, ProcessesProplist, State};
+  {reply, TotalInfos, State};
+handle_call(get_process_list, _From, State=#state{process_list = ProcessList}) ->
+%%  ?LOGF("get_data:~p~n", [ProcessList]),
+  {reply, ProcessList, State};
 handle_call(_Request, _From, State) ->
   {reply, ok, State}.
 
@@ -97,14 +96,14 @@ handle_cast(_Request, State) ->
   {noreply, State}.
 
 handle_info(collect, State) ->
-  ?LOGLN("collect"),
+  ?LOGLN(""),
   Collector = State#state.remote_collector,
-  {ok, HeaderProplist, ProcessesProplist} = Collector:get_data(),
+  {ok, TotalInfos, ProcessList} = Collector:get_data(),
 %%  ?LOGF("get_data:~p~n", [ProcessesProplist]),
   Timer = erlang:send_after(State#state.interval, self(), collect),
   {noreply, State#state{
-    headerProplist = HeaderProplist,
-    processesProplist=ProcessesProplist,
+    total_infos = TotalInfos,
+    process_list=ProcessList,
     timer = Timer
   }};
 handle_info(_Info, State) ->
@@ -120,23 +119,10 @@ code_change(_OldVsn, State, _Extra) ->
 %%% Internal functions
 %%%===================================================================
 
-
-
-%%monitors(Nodes) ->
-%%  monitors(Nodes, []).
-%%
-%%monitors([], Results) ->
-%%  Results;
-%%monitors([Node | Others], Results) ->
-%%  Result = monitor(Node),
-%%  monitors(Others, [Result | Results]).
-
-monitor(Node, Cookie, NameType) ->
-%%  case net_kernel:start(NameType) of
-%%    {ok, _} ->
-      case maybe_set_cookie(Node, Cookie) of
-        ok ->
-          case start(Node) of
+connect_node(Node, Cookie) ->
+      case erlang:set_cookie(Node, Cookie) of
+        true ->
+          case connect(Node) of
             error ->
               io:format("Unable to connect to '~p', check nodename, cookie and network~n", [Node]),
               throw(cant_connect);
@@ -146,28 +132,23 @@ monitor(Node, Cookie, NameType) ->
         CE ->
           io:format("Cookie ~p is malformed, got error ~p~n", [Cookie, CE]),
           throw(CE)
-%%      end;
-%%    NetError ->
-%%      io:format("Couldn't start network with ~p, got error ~p~n", [NameType, NetError]),
-%%      throw(NetError)
   end.
 
 
 
-start(Node) ->
-  % @todo 多结点的情况
+connect(Node) ->
   case net_kernel:connect(Node) of
     true ->
-      State = #state { node = Node, connected = true },
-      Static_data = load_remote_static_data(Node),
+      NodeBasicInfo = get_remote_node_basic_info(Node),
+      State = #state { node = Node, connected = true, node_basic_info = NodeBasicInfo },
       remote_load_code(State#state.remote_collector, Node),
-      State#state{static_data = Static_data};
+      State;
     false ->
       error
   end.
 
 
-load_remote_static_data(Node) ->
+get_remote_node_basic_info(Node) ->
   RPC = fun(M, F, A) -> rpc:call(Node, M, F, A) end,
   Otp = RPC(erlang, system_info, [otp_release]),
   Erts = RPC(erlang, system_info, [version]),
@@ -193,10 +174,4 @@ remote_load_code(Module, Node) ->
 
 
 
-maybe_set_cookie(_, undefined) -> ok;
-maybe_set_cookie(Node, Cookie) ->
-  case erlang:set_cookie(Node,Cookie) of
-    true -> ok;
-    E -> E
-  end.
 
