@@ -9,8 +9,15 @@
 
 
 
--define(TEXT_HEAD,
+-define(TEXT_HEAD2,
   #{<<"content-Type">> => <<"text/plain; charset=utf-8">>}).
 
+-define(TEXT_HEAD,
+  #{<<"content-Type">> => <<"text/plain; charset=utf-8">>
+    ,<<"Cache-Control">> => <<"no-cache">>
+    ,<<"Expires">> => <<"Sat, 25 Dec 1999 00:00:00 GMT">>
+    ,<<"Pragma">> => <<"no-cache">>
+    ,<<"Access-Control-Allow-Credentials">> => <<"true">>
+    ,<<"Access-Control-Allow-Origin">> => <<"null">>}).
 
 

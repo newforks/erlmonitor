@@ -48,7 +48,9 @@
   total_infos,
   process_list,
 %%  remote_collector = erlmonitor_collector,
-  remote_collector = erlmonitor_demo_collector,
+%%  remote_collector = erlmonitor_demo_collector,
+  remote_collector = erlmonitor_recon_collector,
+
   interval = 2000,
   reverse_sort = 0,
   sort = 0,

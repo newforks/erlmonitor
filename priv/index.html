@@ -3,7 +3,7 @@
 <head>
     <title>Erlang Web Monitor</title>
     <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/locale/zh-cn.js"></script>
+    <!--<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.22.2/locale/zh-cn.js"></script>-->
     <!--<script src="./js/erlmonitor_websocket.js?ver=1"></script>-->
     <!--<script src="./js/erlmonitor_socket.io.js?ver=1"></script>-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
@@ -12,6 +12,8 @@
             integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
             crossorigin="anonymous"></script>
 
+    <!--<link rel="stylesheet" type="text/css" href="./css/bootstrap.css" rel="stylesheet"/>-->
+    <link rel="stylesheet" type="text/css" media="screen" href="./css/css-table.css" />
 </head>
 <body>
 
@@ -48,7 +50,12 @@
     </div>
     <div class="row">
         <div class="col-md-6">
+
+
+            <!-- System Table info -->
             <table class="table" id="id_pidlist_table">
+                <button disabled="disabled">process list</button>
+                <input id="orderReverse" value="1"/>
                 <thead>
                 <tr>
                     <th>Pid</th>
@@ -63,10 +70,13 @@
                     <th>Heap Size</th>
                 </tr>
                 </thead>
+
                 <tbody id="id_pidlist_table_body">
-                <tr></tr>
+                <tr>
+                </tr>
                 </tbody>
             </table>
+
         </div>
     </div>
 </div>
@@ -89,30 +99,7 @@
             //     data2 = JSON.stringify(data);
             //     $( "#resultPidList" ).html( data2 );
             // });
-
-            $.get( "ajax/processlist?sortBy=7&sortReverse=0", function( lists ) {
-                console.log(JSON.parse(lists));
-                lists = JSON.parse(lists);
-                console.log(JSON.parse(lists));
-                lists = JSON.parse(lists);
-                // $("#id_pidlist_table_body tr td").remove();
-
-                for(var i=0; i<lists.length; i++) {
-                    item = lists[i];
-                    $("#id_pidlist_table_body tr:last").after("<tr>" +
-                        "<td>"+item.realpid+"</td>" +
-                        "<td>"+item.initial_call+"</td>" +
-                        "<td>"+item.current_function+"</td>" +
-                        "<td>"+item.status+"</td>" +
-                        "<td>"+item.reductions+"</td>" +
-                        "<td>"+item.registered_name+"</td>" +
-                        "<td>"+item.message_queue_len+"</td>" +
-                        "<td>"+item.memory+"</td>" +
-                        "<td>"+item.stack_size+"</td>" +
-                        "<td>"+item.heap_size+"</td>" +
-                        "</tr>");
-                }
-            });
+            load_process_list(7);
 
             // $.get( "ajax/processlist?sortBy=7&sortReverse=0", function( lists ) {
             //     console.log(11111111111);
@@ -161,8 +148,43 @@ function test() {
                 "</tr>");
 }
         })
+
+        $("#id_pidlist_table th").click(function (event) {
+            orderBy = $(this).index() +1;
+            load_process_list(orderBy);
+        });
+    function load_process_list(orderBy) {
+
+        orderReverse = $("#orderReverse").val();
+        console.log(orderReverse);
+        $.get( "ajax/processlist?orderBy="+orderBy+"&orderReverse="+orderReverse, function( lists ) {
+            console.log(lists);
+            // lists = JSON.parse(lists);
+            // console.log(JSON.parse(lists));
+            // $("#id_pidlist_table_body tr td").remove();
+            $("#id_pidlist_table_body tr").empty();
+            for(var i=0; i<lists.length; i++) {
+                item = lists[i];
+                $("#id_pidlist_table_body tr:last").after("<tr>" +
+                    "<td>"+item.realpid+"</td>" +
+                    "<td>"+item.initial_call+"</td>" +
+                    "<td>"+item.current_function+"</td>" +
+                    "<td>"+item.status+"</td>" +
+                    "<td>"+item.reductions+"</td>" +
+                    "<td>"+item.registered_name+"</td>" +
+                    "<td>"+item.message_queue_len+"</td>" +
+                    "<td>"+item.memory+"</td>" +
+                    "<td>"+item.stack_size+"</td>" +
+                    "<td>"+item.heap_size+"</td>" +
+                    "</tr>");
+            }
+        });
+    }
+    
     });
 
+    
+    
 </script>
 
 

@@ -33,7 +33,7 @@ get_data() ->
     [ [ {realpid, P}
 %%        ,{pid,erlang:pid_to_list(P)}
         | process_info_items(P) ]
-      || P <- erlang:processes(), P /= Self ],
+      || P <- lists:sublist(erlang:processes(), 20), P /= Self ],
 
   {ok, HeaderProplist, ProcessesProplist}.
 
@@ -44,14 +44,14 @@ get_data() ->
 %% =============================================================================
 process_info_items(P) ->
   erlang:process_info(P, [
-    registered_name,
-    reductions,
-    message_queue_len,
-    heap_size,
-    stack_size,
-    total_heap_size,
-    memory,
-    dictionary,
     initial_call,
     current_function,
-    status]).
+    status,
+    reductions,
+    registered_name,
+    message_queue_len,
+    memory,
+    stack_size,
+    heap_size,
+    total_heap_size,
+    dictionary]).

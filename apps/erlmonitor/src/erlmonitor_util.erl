@@ -9,6 +9,8 @@
 -module(erlmonitor_util).
 -author("zhaoweiguo").
 
+-include("erlmonitor.hrl").
+
 %% API
 -export([tuple_to_string/1, tuple_to_binary/1, datetime_to_string/1, datetime_to_binary/1]).
 -export([format_json/1]).
@@ -38,12 +40,20 @@ datetime_to_binary(DateTime) ->
 
 format_json([]) ->
   "";
+format_json(I) when is_integer(I); is_atom(I)->
+  I;
+format_json(I) when is_pid(I) ->
+  list_to_binary(pid_to_list(I));
+format_json(I) when is_function(I) ->
+  list_to_binary(erlang:fun_to_list(I));
 format_json({K, V}) when is_integer(V); is_atom(V); is_binary(V)->
   {K, V};
 format_json({K, V}) when is_pid(V) ->
   {K, list_to_binary(pid_to_list(V))};
 format_json({K, V}) when is_tuple(V) ->
-  {K, tuple_to_binary(V)};
+%%  {K1, V1} = format_json(tuple_to_list(V)),
+  S = io_lib:format("~p", [V]),
+  {K, list_to_binary(S)};
 %%format_json({K, V = {{_Year, _Month, _Day}, {_Hour, _Minute, _Second}}}) ->
 %%  {K, datetime_to_binary(V)};
 format_json({K, V}) ->
@@ -52,7 +62,11 @@ format_json([Item | List]) ->
   NewItem = format_json(Item),
   NewList = format_json(List),
   [NewItem | NewList];
+format_json({A, B, C, D}) ->
+  ?LOGLN(""),
+  list_to_binary(tuple_to_string({A, B, C, D}));
 format_json(_Other) ->
+  ?LOGF("~p~n", [_Other]),
   [].
 
 

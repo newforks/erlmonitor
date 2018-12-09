@@ -75,11 +75,12 @@ handler(Req0, Ctx) ->
              <<"/ajax/totalinfo">> ->
                handler("totalinfo")
            end,
-  ?LOGF("encodejson:~p~n", [EncodeJson]),
+%%  ?LOGF("encodejson:~p~n", [EncodeJson]),
   Req = cowboy_req:reply(200,
 %%    #{<<"content-type">> => <<"application/json">>},
-    #{<<"content-type">> => <<"text/plain">>},
-    jsx:encode(EncodeJson),
+%%    #{<<"content-type">> => <<"text/plain">>},
+    ?TEXT_HEAD,
+    EncodeJson,
     Req0),
   {ok, Req, Ctx}.
 
@@ -98,15 +99,18 @@ handler("processlist", OrderBy, OrderReverse) ->
 %%  List = ["1", "2", "3"],
 %%  ?LOGLN("1111111"),
   ProcessList = erlmonitor_data:get_process_list(),
-  ?LOGF("data:~p~n", [ProcessList]),
+%%  ?LOGF("data:~p~n", [ProcessList]),
 %%  SortList = lists:keysort(5, ProcessList),
-  SortList = erlmonitor_format:sort(ProcessList, 5),
+  SortList = erlmonitor_format:sort(ProcessList, OrderBy, OrderReverse),
 %%  List = [abc, <<"abc">>],
   ?LOGF("data:~p~n", [SortList]),
   JsonList = erlmonitor_util:format_json(SortList),
-  EncodeJson = jsx:encode(JsonList),
-%%  JsonList = List,
+%%  JsonList = SortList,
   ?LOGF("jsonlist:~p~n", [JsonList]),
+  EncodeJson = jsx:encode(JsonList),
+%%  EncodeJson = jsx_encoder:encode(JsonList, jsx_encoder),
+%%  EncodeJson = JsonList,
+  ?LOGF("EncodeJson:~p~n", [EncodeJson]),
   EncodeJson.
 %%  erlmonitor_format:handle_process_list(JsonList).
 

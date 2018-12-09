@@ -26,12 +26,13 @@ get_data() ->
   ],
   Self = self(),
   % Just get 5 number for debugging
-  PidList = lists:sublist(erlang:processes(), 5),
+  PidList = erlang:processes(),
+%%  PidList = lists:sublist(erlang:processes(), 5),
 %%  ?LOGF("pidlist:~p~n", [PidList]),
   ProcessList =
     [ [{realpid, P}
 %%        ,{pid,erlang:pid_to_list(P)}
-      |process_info_items(P)]
+      | process_info_items(P)]
       || P <- PidList, P /= Self ],
 
   {ok, TotalInfos, ProcessList}.
@@ -43,14 +44,14 @@ get_data() ->
 %% =============================================================================
 process_info_items(P) ->
   erlang:process_info(P, [
-    registered_name,
-    reductions,
-    message_queue_len,
-    heap_size,
-    stack_size,
-    total_heap_size,
-    memory,
-    dictionary,
     initial_call,
     current_function,
-    status]).
+    status,
+    reductions,
+    registered_name,
+    message_queue_len,
+    memory,
+    stack_size,
+    heap_size,
+    total_heap_size,
+    dictionary]).
