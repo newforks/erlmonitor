@@ -24,8 +24,8 @@ get_data() ->
     {memory, erlang:memory([system, atom, atom_used, binary, code, ets])}
   ],
   Self = self(),
-  Processes = lists:sublist(erlang:processes(), 10),
-%%  Processes = erlang:processes(),
+%%  Processes = lists:sublist(erlang:processes(), 10),
+  Processes = erlang:processes(),
   ProcessesProplist =
     [ [ {realpid, P}
 %%        ,{pid,erlang:pid_to_list(P)}
