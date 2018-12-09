@@ -35,14 +35,15 @@ Tasks
 
 - entop like function
 
-    - [x] start the project
-    - [x] just monitor memory, message_queue of pid list
+    - [x] monitor memory, message_queue ... of pid list
     - [x] a simple tool (implement the basic) like entop
-    - [x] sort
-    - [ ] socket mode:
-        - controlled by server
-        - just caculate once no matter how many clients
+    - [x] sortBy and sortReverse
+    - [ ] web socket mode:
+        - [ ] heart beat
+        - [ ] set the heart beat interval
     - [ ] monitor muli nodes
+        - [ ] select node
+        - [ ] add node dynamic
 
 - Interface 
 

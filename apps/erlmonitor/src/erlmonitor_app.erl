@@ -18,6 +18,7 @@ start(_StartType, _StartArgs) ->
   Dispatch = cowboy_router:compile([
     {'_', [
 %%      {"/", erlmonitor_handler, []}
+      {"/index.html", cowboy_static, {priv_file, erlmonitor, "index.html"}},
       {"/static/[...]", cowboy_static, {priv_dir, erlmonitor, "static/"}},
       {"/js/[...]", cowboy_static, {priv_dir, erlmonitor, "js/"}},
       {"/normal/[...]", erlmonitor_handler, []},
