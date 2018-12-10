@@ -79,8 +79,13 @@ start_link() ->
 %%%===================================================================
 
 init([]) ->
-  Node = 'demo_cowboy@127.0.0.1',
-  Cookie = 'demo_cowboy',
+  {ok, Nodes} = application:get_env(nodes),
+  ?LOGF("Node~p~n", [Nodes]),
+  [{node, [{name, Node},
+    {cookie, Cookie},
+    {interval, _Interval}]} | _] = Nodes,
+%%  Node = 'demo_cowboy@127.0.0.1',
+%%  Cookie = 'demo_cowboy',
   State = connect_node(Node, Cookie),
   self() ! collect,
   {ok, State}.

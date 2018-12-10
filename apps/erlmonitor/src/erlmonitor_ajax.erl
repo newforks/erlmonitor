@@ -94,24 +94,30 @@ handler(Req0, Ctx) ->
 
 handler("processlist", OrderBy, OrderReverse) ->
   ?LOGLN(""),
+%%  ?LOGF("orderby:~p, reverse:~p~n", [OrderBy, OrderReverse]),
   % todo
 %%  {ok, Nodes} = application:get_env("nodes"),
 %%  List = ["1", "2", "3"],
-%%  ?LOGLN("1111111"),
+  ?LOGF("num:~p~n", [length(erlmonitor_data:get_process_list())]),
   ProcessList = erlmonitor_data:get_process_list(),
+%%  ProcessList = lists:sublist(erlmonitor_data:get_process_list(), 2),
 %%  ?LOGF("data:~p~n", [ProcessList]),
-%%  SortList = lists:keysort(5, ProcessList),
-  SortList1 = erlmonitor_format:sort(ProcessList, OrderBy, OrderReverse),
-  SortList = lists:sublist(SortList1, 50),
+%%  ?LOGF("data:~p~n", [lists:sublist(ProcessList, 5)]),
+
+  ?FILE_DEBUG(ProcessList),
+
+  SortList = erlmonitor_format:sort(ProcessList, OrderBy, OrderReverse),
+%%  SortList = lists:sublist(SortList1, 20), % @todo
 %%  List = [abc, <<"abc">>],
-  ?LOGF("data:~p~n", [SortList]),
+%%  ?LOGF("data:~p~n", [SortList]),
+%%  ?LOGF("first 5 data:~p~n", [lists:sublist(SortList, 5)]),
   JsonList = erlmonitor_util:format_json(SortList),
 %%  JsonList = SortList,
-  ?LOGF("jsonlist:~p~n", [JsonList]),
+%%  ?LOGF("jsonlist:~p~n", [JsonList]),
   EncodeJson = jsx:encode(JsonList),
 %%  EncodeJson = jsx_encoder:encode(JsonList, jsx_encoder),
 %%  EncodeJson = JsonList,
-  ?LOGF("EncodeJson:~p~n", [EncodeJson]),
+%%  ?LOGF("EncodeJson:~p~n", [EncodeJson]),
   EncodeJson.
 %%  erlmonitor_format:handle_process_list(JsonList).
 

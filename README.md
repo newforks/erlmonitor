@@ -58,6 +58,9 @@ Tasks
     - [ ] multi nodes
     - [ ] beautiful display
 
+- statsd: Trend monitoring
+    - [ ] process trend monitoring
+
 - System Level Monitor
     
     - [ ] Memory, CPU, Task
