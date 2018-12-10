@@ -10,6 +10,9 @@
 ).
 
 
+-define(TOPNUM, 50).
+
+
 -define(CHILD(I, Type), {I, {I, start_link, []}, permanent, 5000, Type, [I]}).
 
 %%-define(RPC(M, F, A), rpc:call(Node, M, F, A)).

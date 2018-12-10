@@ -106,8 +106,8 @@ handler("processlist", OrderBy, OrderReverse) ->
 
   ?FILE_DEBUG(ProcessList),
 
-  SortList = erlmonitor_format:sort(ProcessList, OrderBy, OrderReverse),
-%%  SortList = lists:sublist(SortList1, 20), % @todo
+  SortList1 = erlmonitor_format:sort(ProcessList, OrderBy, OrderReverse),
+  SortList = lists:sublist(SortList1, ?TOPNUM), % @todo
 %%  List = [abc, <<"abc">>],
 %%  ?LOGF("data:~p~n", [SortList]),
 %%  ?LOGF("first 5 data:~p~n", [lists:sublist(SortList, 5)]),
